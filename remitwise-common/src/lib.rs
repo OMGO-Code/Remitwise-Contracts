@@ -377,7 +377,7 @@ pub fn require_non_zero_bytes<const N: usize>(bytes: &BytesN<N>) -> Result<(), B
 pub const SYMBOL_SHORT_MAX_LEN: u32 = 9;
 
 /// Error returned when a candidate symbol name fails the length check enforced
-/// by [`require_valid_symbol_length`].
+/// by [`require_valid_symbol_name_length`].
 #[contracterror]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 #[repr(u32)]
