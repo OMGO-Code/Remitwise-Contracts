@@ -1260,30 +1260,6 @@ pub enum TagError {
     InvalidChar { position: u32 },
 }
 
-/// Canonicalizes a single label string into a `Symbol`.
-///
-/// Rules:
-/// - Leading and trailing ASCII whitespace is stripped.
-/// - ASCII uppercase letters are folded to lowercase.
-/// - The result must satisfy `Symbol`'s charset (`[a-zA-Z0-9_]` after folding)
-///   and length (`1..=32` bytes after trimming), otherwise this panics.
-///
-/// # Idempotency guarantee
-///
-/// Applying this function twice to any input yields the same `Symbol`:
-/// `canonicalise_symbol(env, &canonicalise_symbol(env, &x).to_string()) == canonicalise_symbol(env, &x)`.
-///
-/// # Whitespace round-trip
-///
-/// Inputs that differ only in leading/trailing whitespace produce identical
-/// canonical `Symbol` values: `"hello"`, `" hello"`, and `"hello "` all map
-/// to `Symbol("hello")`.
-///
-/// # Panics
-///
-/// - On empty or whitespace-only input (after trimming length is 0).
-/// - On input over 32 bytes (after trimming).
-/// - When the trimmed, lowercased content contains bytes outside `[a-z0-9_]`.
 pub fn canonicalise_symbol(env: &Env, input: &soroban_sdk::String) -> Symbol {
     let len = input.len();
     if len == 0 {
@@ -1943,6 +1919,7 @@ impl RemitwiseEvents {
 pub fn emit_audit<T>(env: &Env, op: Symbol, actor: &Address, meta: T)
 where
     T: soroban_sdk::IntoVal<Env, soroban_sdk::Val>,
+    soroban_sdk::Val: soroban_sdk::TryFromVal<Env, T>,
 {
     // Fixed topic tuple — every audit event from every contract uses this
     // identical shape so indexers can subscribe with a single filter.
